@@ -158,7 +158,7 @@ namespace ariel
     // output operator
     ostream &operator<<(ostream &os, const NumberWithUnits &num)
     {
-        string s = "right";
+        double s = num.number;
         os << s;
         return os;
     }

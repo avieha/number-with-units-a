@@ -7,6 +7,11 @@
 using namespace std;
 using namespace ariel;
 
+/************ Doesnt work
+ifstream unit_file("units.txt");
+NumberWithUnits::read_units(unit_file);
+********************************/
+
 // distance units
 
 ariel::NumberWithUnits meter{3, "m"};
@@ -21,6 +26,25 @@ ariel::NumberWithUnits mi{30, "min"};
 
 ariel::NumberWithUnits usd{1, "USD"};
 ariel::NumberWithUnits ils{1, "ILS"};
+
+TEST_CASE("wrong - different kinds of parameters"){
+    srand(time(0));
+    for (size_t i = 0; i < 10; i++)
+    {
+        double d = rand()%100;
+        double e = rand()%50;
+        
+        CHECK_THROWS(NumberWithUnits a = NumberWithUnits (d,"bit"));
+        CHECK_NOTHROW(NumberWithUnits b = NumberWithUnits (e,"ILS"));
+        CHECK_THROWS(NumberWithUnits c = NumberWithUnits (e,"mIN"));
+        CHECK_THROWS((NumberWithUnits{d,"min"})+(NumberWithUnits{e,"bitcoin"}));
+        CHECK_THROWS((NumberWithUnits{d,"cm"})-(NumberWithUnits{e,"aviem"}));
+        CHECK_THROWS((NumberWithUnits{d,"km"})+=(NumberWithUnits{e,"KM"}));
+        CHECK_THROWS((NumberWithUnits{d,"USD"})-=(NumberWithUnits{e,"UsD"}));
+        CHECK_THROWS((NumberWithUnits{d,"ILS"})+(NumberWithUnits{e,"IlS"}));
+        CHECK_THROWS((NumberWithUnits{d,"hour"})+(NumberWithUnits{e,"HoUr"}));
+    }
+}
 
 TEST_CASE("First - check the operator =="){
     ariel::NumberWithUnits meter1 = {5,"m"};
@@ -42,6 +66,7 @@ TEST_CASE("Good unary addition & subtraction")
 
 TEST_CASE("Good binary addition & subtraction")
 {
+    
     CHECK((meter + cm) == NumberWithUnits{3.1, "m"});
     CHECK((hour + mi) == NumberWithUnits{4.5, "hour"});
     CHECK((ils + usd) == NumberWithUnits{4.33, "ILS"});
@@ -52,7 +77,7 @@ TEST_CASE("Good binary addition & subtraction")
     CHECK((meter += cm) == NumberWithUnits{3.1, "m"});
     CHECK((hour += mi) == NumberWithUnits{4.5, "hour"});
     CHECK((ils += ils) == NumberWithUnits{2, "ILS"});
-    CHECK((meter -= cm) == NumberWithUnits{2.9, "m"});
+    CHECK((meter -= cm) == NumberWithUnits{3, "m"});
     CHECK((hour -= mi) == NumberWithUnits{3.5, "hour"});
     CHECK((ils -= ils) == NumberWithUnits{0, "ILS"});
 }
@@ -78,6 +103,7 @@ TEST_CASE("Good postfix addition & subtraction")
 
 TEST_CASE("add & sub diff kinds of units")
 {
+    
     CHECK_THROWS((meter + hour));
     CHECK_THROWS((meter - hour));
     
@@ -146,3 +172,5 @@ TEST_CASE("wrong comparison operators")
     
     CHECK_THROWS(b = (meter <= ils));
 }
+
+//ostream & istream
